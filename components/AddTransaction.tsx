@@ -57,7 +57,7 @@ amount: Number(amount),
 category,
 type,
 person,
-description,   // ← SAVING DESCRIPTION
+notes: description,
 date: date || new Date().toISOString()
 }
 ])

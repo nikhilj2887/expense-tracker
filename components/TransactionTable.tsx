@@ -38,7 +38,7 @@ const { error } = await supabase
 .update({
 amount: editing.amount,
 category: editing.category,
-description: editing.description
+notes: editing.description
 })
 .eq("id", editing.id)
 
@@ -96,7 +96,7 @@ return(
 <td>{t.category}</td>
 
 <td className="text-gray-300">
-{t.description || "-"}
+{t.notes || "-"}
 </td>
 
 <td className={t.type==="income" ? "text-green-400" : "text-red-400"}>
