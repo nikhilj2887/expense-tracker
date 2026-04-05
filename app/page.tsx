@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 
 import AddTransaction from "@/components/AddTransaction"
 import CategoryPieChart from "@/components/CategoryPieChart"
@@ -18,13 +19,28 @@ import LogoutButton from "@/components/LogoutButton"
 
 export default function Home(){
 
+const router = useRouter()
+
 const [transactions,setTransactions] = useState<any[]>([])
 const [selectedMonth,setSelectedMonth] = useState(new Date().getMonth())
 const [selectedYear,setSelectedYear] = useState(new Date().getFullYear())
 
 useEffect(()=>{
-loadTransactions()
+checkUser()
 },[])
+
+async function checkUser(){
+
+const { data: { user } } = await supabase.auth.getUser()
+
+if(!user){
+router.push("/login")
+return
+}
+
+loadTransactions()
+
+}
 
 async function loadTransactions(){
 
@@ -173,8 +189,6 @@ className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 
 </select>
 
-{/* LOGOUT BUTTON */}
-
 <LogoutButton/>
 
 </div>
@@ -201,19 +215,12 @@ Expense trend vs last month:
 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
 <AddTransaction reload={loadTransactions}/>
-
 <CategoryPieChart data={categoryData}/>
-
 <BudgetChart/>
-
 <MonthlyChart data={Object.values(monthlyData)}/>
-
 <DailySpendingChart transactions={filteredTransactions}/>
-
 <SpendingLeaderboard transactions={filteredTransactions}/>
-
 <YearlyOverviewChart transactions={transactions}/>
-
 <TopCategories transactions={filteredTransactions}/>
 
 </div>
@@ -221,12 +228,8 @@ Expense trend vs last month:
 {/* TABLE */}
 
 <div className="mt-8">
-
 <TransactionTable transactions={filteredTransactions}/>
-
 </div>
-
-{/* FLOATING BUTTON */}
 
 <FloatingAddButton/>
 
