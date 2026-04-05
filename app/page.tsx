@@ -1,65 +1,228 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase"
+
+import AddTransaction from "@/components/AddTransaction"
+import CategoryPieChart from "@/components/CategoryPieChart"
+import MonthlyChart from "@/components/MonthlyChart"
+import BudgetChart from "@/components/BudgetChart"
+import TransactionTable from "@/components/TransactionTable"
+import SummaryCards from "@/components/SummaryCards"
+import DailySpendingChart from "@/components/DailySpendingChart"
+import FloatingAddButton from "@/components/FloatingAddButton"
+import SpendingLeaderboard from "@/components/SpendingLeaderboard"
+import YearlyOverviewChart from "@/components/YearlyOverviewChart"
+import TopCategories from "@/components/TopCategories"
+
+export default function Home(){
+
+const [transactions,setTransactions] = useState<any[]>([])
+const [selectedMonth,setSelectedMonth] = useState(new Date().getMonth())
+const [selectedYear,setSelectedYear] = useState(new Date().getFullYear())
+
+useEffect(()=>{
+loadTransactions()
+},[])
+
+async function loadTransactions(){
+
+const { data } = await supabase
+.from("transactions")
+.select("*")
+.order("date",{ascending:false})
+
+setTransactions(data || [])
+
+}
+
+const filteredTransactions = transactions.filter((t:any)=>{
+
+if(!t.date) return false
+
+const d = new Date(t.date)
+
+return (
+d.getMonth() === selectedMonth &&
+d.getFullYear() === selectedYear
+)
+
+})
+
+/* CATEGORY DATA */
+
+const categoryData = Object.values(
+filteredTransactions.reduce((acc:any,t:any)=>{
+
+if(!acc[t.category]){
+acc[t.category] = {name:t.category,value:0}
+}
+
+acc[t.category].value += Number(t.amount)
+
+return acc
+
+},{})
+)
+
+/* MONTHLY DATA */
+
+const monthlyData = transactions.reduce((acc:any,t:any)=>{
+
+if(!t.date) return acc
+
+const month = new Date(t.date).toLocaleString("default",{month:"short"})
+
+if(!acc[month]){
+acc[month] = {month,income:0,expense:0}
+}
+
+if(t.type === "income"){
+acc[month].income += Number(t.amount)
+}else{
+acc[month].expense += Number(t.amount)
+}
+
+return acc
+
+},{}) 
+
+/* TREND CALCULATION */
+
+const prevMonthTransactions = transactions.filter((t:any)=>{
+
+if(!t.date) return false
+
+const d = new Date(t.date)
+
+return (
+d.getMonth() === selectedMonth-1 &&
+d.getFullYear() === selectedYear
+)
+
+})
+
+const currentExpense = filteredTransactions
+.filter((t:any)=>t.type==="expense")
+.reduce((sum:number,t:any)=>sum+Number(t.amount),0)
+
+const prevExpense = prevMonthTransactions
+.filter((t:any)=>t.type==="expense")
+.reduce((sum:number,t:any)=>sum+Number(t.amount),0)
+
+const trendArrow = currentExpense > prevExpense ? "↑" : "↓"
+
+return(
+
+<div className="px-4 md:px-10 py-8 bg-gray-900 min-h-screen text-white">
+
+{/* HEADER */}
+
+<div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+
+<div>
+
+<h1 className="text-2xl md:text-3xl font-bold">
+Family Expense Tracker
+</h1>
+
+<p className="text-gray-400 text-sm">
+Viewing: {selectedMonth+1}/{selectedYear}
+</p>
+
+</div>
+
+<div className="flex gap-3">
+
+<select
+value={selectedMonth}
+onChange={(e)=>setSelectedMonth(Number(e.target.value))}
+className="bg-gray-800 border border-gray-700 p-2 rounded-lg text-sm"
+>
+
+<option value={0}>Jan</option>
+<option value={1}>Feb</option>
+<option value={2}>Mar</option>
+<option value={3}>Apr</option>
+<option value={4}>May</option>
+<option value={5}>Jun</option>
+<option value={6}>Jul</option>
+<option value={7}>Aug</option>
+<option value={8}>Sep</option>
+<option value={9}>Oct</option>
+<option value={10}>Nov</option>
+<option value={11}>Dec</option>
+
+</select>
+
+<select
+value={selectedYear}
+onChange={(e)=>setSelectedYear(Number(e.target.value))}
+className="bg-gray-800 border border-gray-700 p-2 rounded-lg text-sm"
+>
+
+<option value={2024}>2024</option>
+<option value={2025}>2025</option>
+<option value={2026}>2026</option>
+<option value={2027}>2027</option>
+
+</select>
+
+</div>
+
+</div>
+
+{/* TREND INDICATOR */}
+
+<div className="mb-6 text-sm text-gray-400">
+
+Expense trend vs last month:
+<span className={`ml-2 font-bold ${trendArrow==="↑"?"text-red-400":"text-green-400"}`}>
+{trendArrow}
+</span>
+
+</div>
+
+{/* SUMMARY */}
+
+<SummaryCards transactions={filteredTransactions}/>
+
+{/* DASHBOARD GRID */}
+
+<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+
+<AddTransaction reload={loadTransactions}/>
+
+<CategoryPieChart data={categoryData}/>
+
+<BudgetChart/>
+
+<MonthlyChart data={Object.values(monthlyData)}/>
+
+<DailySpendingChart transactions={filteredTransactions}/>
+
+<SpendingLeaderboard transactions={filteredTransactions}/>
+
+<YearlyOverviewChart transactions={transactions}/>
+
+<TopCategories transactions={filteredTransactions}/>
+
+</div>
+
+{/* TABLE */}
+
+<div className="mt-8">
+
+<TransactionTable transactions={filteredTransactions}/>
+
+</div>
+
+{/* FLOATING BUTTON */}
+
+<FloatingAddButton/>
+
+</div>
+
+)
+
 }
