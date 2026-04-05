@@ -11,20 +11,53 @@ const [type,setType] = useState("expense")
 const [date,setDate] = useState("")
 const [person,setPerson] = useState("Nikhil")
 
+/* NEW DESCRIPTION STATE */
+
+const [description,setDescription] = useState("")
+
+/* CATEGORY LISTS */
+
+const expenseCategories = [
+"Food",
+"Travel",
+"Shopping",
+"Entertainment",
+"Health",
+"Home",
+"Transportation",
+"Utilities",
+"Bills",
+"CC Bill",
+"Rent",
+"Savings",
+"Debt",
+"Niksha Nilayam",
+"Sai Ganesh"
+]
+
+const incomeCategories = [
+"Paycheck",
+"Bonus",
+"Interest",
+"Business Income",
+"Other Income"
+]
+
+/* ADD TRANSACTION */
+
 async function addTransaction(e:any){
 
 e.preventDefault()
 
-const { data: { user } } = await supabase.auth.getUser()
-
-const { data, error } = await supabase
+const { error } = await supabase
 .from("transactions")
 .insert([
 {
-amount,
+amount: Number(amount),
 category,
 type,
 person,
+description,   // ← SAVING DESCRIPTION
 date: date || new Date().toISOString()
 }
 ])
@@ -32,16 +65,25 @@ date: date || new Date().toISOString()
 if(error){
 console.log(error)
 alert(error.message)
+return
 }
 
+/* Reset form */
+
 setAmount("")
+setType("expense")
+setCategory("Food")
+setDescription("")   // ← RESET DESCRIPTION
+setDate("")
+setPerson("Nikhil")
+
 reload()
 
 }
 
 return(
 
-<div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700">
+<div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 w-full">
 
 <h2 className="text-xl font-semibold mb-5">
 Add Transaction
@@ -49,77 +91,89 @@ Add Transaction
 
 <form onSubmit={addTransaction} className="space-y-4">
 
+{/* Amount */}
+
 <input
 type="number"
 placeholder="Amount"
 value={amount}
 onChange={(e)=>setAmount(e.target.value)}
-className="border p-3 w-full rounded-lg"
+className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 />
+
+{/* Type */}
 
 <select
 value={type}
-onChange={(e)=>setType(e.target.value)}
-className="border p-3 w-full rounded-lg"
+onChange={(e)=>{
+
+setType(e.target.value)
+
+if(e.target.value==="income"){
+setCategory("Paycheck")
+}else{
+setCategory("Food")
+}
+
+}}
+className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 >
+
 <option value="expense">Expense</option>
 <option value="income">Income</option>
+
 </select>
 
-<input
-list="categories"
+{/* Category */}
+
+<select
 value={category}
 onChange={(e)=>setCategory(e.target.value)}
-placeholder="Category"
-className="border p-3 w-full rounded-lg"
+className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
+>
+
+{type === "expense"
+? expenseCategories.map((cat)=>(
+<option key={cat} value={cat}>{cat}</option>
+))
+: incomeCategories.map((cat)=>(
+<option key={cat} value={cat}>{cat}</option>
+))
+}
+
+</select>
+
+{/* DESCRIPTION TEXTBOX */}
+
+<input
+placeholder="Description (Eg: Swiggy dinner, Uber ride, Petrol)"
+value={description}
+onChange={(e)=>setDescription(e.target.value)}
+className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 />
 
-<datalist id="categories">
-<option value="Food"/>
-<option value="Rent"/>
-<option value="Travel"/>
-<option value="Shopping"/>
-<option value="Entertainment"/>
-<option value="Health/Medical"/>
-<option value="Home"/>
-<option value="Transportation"/>
-<option value="Personal"/>
-<option value="EMI"/>
-<option value="Utilities/Groceries"/>
-<option value="Debt"/>
-<option value="Other"/>
-<option value="Bills"/>
-<option value="CC Bill"/>
-<option value="Food Card Expenses"/>
-<option value="Holiday"/>
-<option value="Savings"/>
-<option value="Niksha Nilayam"/>
-<option value="Sai Ganesh"/>
-<option value="Rapidnest"/>
-<option value="Paycheck"/>
-<option value="Savings"/>
-<option value="Interest"/>
-<option value="Bonus"/>
-</datalist>
+{/* Date */}
 
 <input
 type="date"
 value={date}
 onChange={(e)=>setDate(e.target.value)}
-className="border p-3 w-full rounded-lg"
+className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 />
+
+{/* Person */}
 
 <select
 value={person}
 onChange={(e)=>setPerson(e.target.value)}
-className="border p-3 w-full rounded-lg"
+className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 >
-<option>Nikhil</option>
-<option>Sirisha</option>
+<option value="Nikhil">Nikhil</option>
+<option value="Sirisha">Sirisha</option>
 </select>
 
 <button
-className="bg-blue-600 hover:bg-blue-700 text-white w-full p-3 rounded-lg"
+className="bg-blue-600 hover:bg-blue-700 text-white w-full p-3 rounded-lg transition"
 >
 Add Transaction
 </button>

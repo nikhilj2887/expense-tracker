@@ -53,7 +53,9 @@ d.getFullYear() === selectedYear
 /* CATEGORY DATA */
 
 const categoryData = Object.values(
-filteredTransactions.reduce((acc:any,t:any)=>{
+filteredTransactions
+.filter((t:any)=>t.type==="expense")
+.reduce((acc:any,t:any)=>{
 
 if(!acc[t.category]){
 acc[t.category] = {name:t.category,value:0}
