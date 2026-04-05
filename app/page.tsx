@@ -119,15 +119,15 @@ return(
 
 {/* HEADER */}
 
-<div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+<div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-10">
 
 <div>
 
-<h1 className="text-2xl md:text-3xl font-bold">
+<h1 className="text-3xl font-bold">
 Family Expense Tracker
 </h1>
 
-<p className="text-gray-400 text-sm">
+<p className="text-gray-400 text-sm mt-1">
 Viewing: {selectedMonth+1}/{selectedYear}
 </p>
 
@@ -135,12 +135,12 @@ Viewing: {selectedMonth+1}/{selectedYear}
 
 {/* RIGHT SIDE CONTROLS */}
 
-<div className="flex gap-3 items-center">
+<div className="flex items-center gap-3">
 
 <select
 value={selectedMonth}
 onChange={(e)=>setSelectedMonth(Number(e.target.value))}
-className="bg-gray-800 border border-gray-700 p-2 rounded-lg text-sm"
+className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 >
 
 <option value={0}>Jan</option>
@@ -161,7 +161,7 @@ className="bg-gray-800 border border-gray-700 p-2 rounded-lg text-sm"
 <select
 value={selectedYear}
 onChange={(e)=>setSelectedYear(Number(e.target.value))}
-className="bg-gray-800 border border-gray-700 p-2 rounded-lg text-sm"
+className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 >
 
 <option value={2024}>2024</option>
@@ -172,6 +172,7 @@ className="bg-gray-800 border border-gray-700 p-2 rounded-lg text-sm"
 </select>
 
 {/* LOGOUT BUTTON */}
+
 <LogoutButton/>
 
 </div>
