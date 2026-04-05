@@ -14,6 +14,7 @@ import FloatingAddButton from "@/components/FloatingAddButton"
 import SpendingLeaderboard from "@/components/SpendingLeaderboard"
 import YearlyOverviewChart from "@/components/YearlyOverviewChart"
 import TopCategories from "@/components/TopCategories"
+import LogoutButton from "@/components/LogoutButton"
 
 export default function Home(){
 
@@ -132,7 +133,9 @@ Viewing: {selectedMonth+1}/{selectedYear}
 
 </div>
 
-<div className="flex gap-3">
+{/* RIGHT SIDE CONTROLS */}
+
+<div className="flex gap-3 items-center">
 
 <select
 value={selectedMonth}
@@ -167,6 +170,9 @@ className="bg-gray-800 border border-gray-700 p-2 rounded-lg text-sm"
 <option value={2027}>2027</option>
 
 </select>
+
+{/* LOGOUT BUTTON */}
+<LogoutButton/>
 
 </div>
 
