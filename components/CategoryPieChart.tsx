@@ -20,7 +20,8 @@ export default function CategoryPieChart({data}:any) {
         Category Breakdown
       </h2>
 
-      <PieChart width={350} height={250}>
+      <ResponsiveContainer width="100%" height={300}>
+  <PieChart>
         <Pie
           data={data}
           dataKey="value"

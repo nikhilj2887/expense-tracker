@@ -39,7 +39,7 @@ Yearly Financial Overview
 
     <CartesianGrid strokeDasharray="3 3" />
 
-    <XAxis dataKey="month" />
+    <XAxis dataKey="month" tick={{fontSize:12}}/>
 
     <YAxis />
 
