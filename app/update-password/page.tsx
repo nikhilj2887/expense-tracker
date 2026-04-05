@@ -1,25 +1,41 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 
-export default function UpdatePassword() {
+export default function UpdatePassword(){
 
   const [password,setPassword] = useState("")
+  const [ready,setReady] = useState(false)
+
+  useEffect(() => {
+
+    // Supabase sets session automatically from reset link
+    supabase.auth.getSession().then(({ data }) => {
+      if(data.session){
+        setReady(true)
+      }
+    })
+
+  }, [])
 
   async function updatePassword(){
 
     const { error } = await supabase.auth.updateUser({
-      password: password
+      password
     })
 
     if(error){
       alert(error.message)
     } else {
       alert("Password updated successfully")
-      window.location.href = "/login"
+      window.location.href="/login"
     }
 
+  }
+
+  if(!ready){
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
   }
 
   return (
