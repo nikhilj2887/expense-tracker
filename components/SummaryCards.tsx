@@ -1,5 +1,11 @@
 "use client"
 
+const formatCurrency = (amount:number) =>
+  amount.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+
 export default function SummaryCards({transactions}:any){
 
 const totalExpense = transactions
@@ -24,21 +30,21 @@ return(
 <div className="bg-gray-800 border border-gray-700 p-5 rounded-xl shadow">
 <p className="text-gray-400 text-sm">Income</p>
 <h2 className="text-2xl font-bold text-green-500">
-₹{totalIncome}
+₹{formatCurrency(totalIncome)}
 </h2>
 </div>
 
 <div className="bg-gray-800 border border-gray-700 p-5 rounded-xl shadow">
 <p className="text-gray-400 text-sm">Expenses</p>
 <h2 className="text-2xl font-bold text-red-500">
-₹{totalExpense}
+₹{formatCurrency(totalExpense)}
 </h2>
 </div>
 
 <div className="bg-gray-800 border border-gray-700 p-5 rounded-xl shadow">
 <p className="text-gray-400 text-sm">Balance</p>
 <h2 className="text-2xl font-bold text-blue-500">
-₹{balance}
+₹{formatCurrency(balance)}
 </h2>
 </div>
 
