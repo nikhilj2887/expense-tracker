@@ -40,6 +40,7 @@ const incomeCategories = [
 "Bonus",
 "Interest",
 "Business Income",
+"Rent"
 "Other Income"
 ]
 
