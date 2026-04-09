@@ -34,7 +34,7 @@ Spending Leaderboard
 {i===0 ? "🥇" : "🥈"} {name}
 </span>
 
-<span>₹{amount}</span>
+<span>₹{amount.toFixed(2)}</span>
 
 </div>
 ))}
