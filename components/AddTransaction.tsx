@@ -32,6 +32,7 @@ const expenseCategories = [
 "Savings",
 "Debt",
 "Niksha Nilayam",
+  "Personal",
 "Sai Ganesh"
 ]
 
