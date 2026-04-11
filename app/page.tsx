@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
-import { Menu } from "lucide-react"
 
 import AddTransaction from "@/components/AddTransaction"
 import CategoryPieChart from "@/components/CategoryPieChart"
@@ -12,7 +11,6 @@ import BudgetChart from "@/components/BudgetChart"
 import TransactionTable from "@/components/TransactionTable"
 import SummaryCards from "@/components/SummaryCards"
 import DailySpendingChart from "@/components/DailySpendingChart"
-import FloatingAddButton from "@/components/FloatingAddButton"
 import SpendingLeaderboard from "@/components/SpendingLeaderboard"
 import YearlyOverviewChart from "@/components/YearlyOverviewChart"
 import TopCategories from "@/components/TopCategories"
@@ -129,7 +127,7 @@ return acc
 
 },[transactions])
 
-/* TREND CALCULATION */
+/* TREND */
 
 const prevMonthTransactions = transactions.filter((t:any)=>{
 
@@ -161,31 +159,20 @@ if(loading){
 return(
 
 <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-
 Loading dashboard...
-
 </div>
 
 )
 
 }
 
-return(
+return (
 
-
-
-<div className="min-h-screen bg-gray-950">
-    </div>
-
-{/* HEADER */}
+<div className="min-h-screen bg-gray-950 text-white px-6 md:px-12 py-10">
 
 {/* HEADER */}
 
 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-10">
-
-{/* LEFT SIDE */}
-
-<div className="flex items-start justify-between w-full">
 
 <div>
 <h1 className="text-2xl md:text-3xl font-bold">
@@ -196,14 +183,6 @@ Family Expense Tracker
 Viewing: {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][selectedMonth]} {selectedYear}
 </p>
 </div>
-
-{/* MOBILE MENU BUTTON */}
-
-
-
-</div>
-
-{/* RIGHT CONTROLS */}
 
 <div className="flex items-center gap-3">
 
@@ -237,15 +216,10 @@ className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 {/* TREND */}
 
 <div className="mb-6 text-gray-300">
-
 Expense trend vs last month:
-
 <span className={`ml-2 font-bold ${trendArrow==="↑"?"text-red-400":"text-green-400"}`}>
-
 {trendArrow}
-
 </span>
-
 </div>
 
 {/* SUMMARY */}
@@ -254,7 +228,7 @@ Expense trend vs last month:
 
 {/* DASHBOARD GRID */}
 
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
 
 <AddTransaction reload={loadTransactions}/>
 
@@ -262,7 +236,7 @@ Expense trend vs last month:
 
 <BudgetChart/>
 
-<MonthlyChart data={monthlyData} className="lg:col-span-2"/>
+<MonthlyChart data={monthlyData} className="xl:col-span-2"/>
 
 <DailySpendingChart transactions={filteredTransactions}/>
 
@@ -276,16 +250,11 @@ Expense trend vs last month:
 
 {/* TABLE */}
 
-<div className="mt-8">
-
+<div className="mt-10">
 <TransactionTable transactions={filteredTransactions}/>
-
 </div>
 
-
-
 </div>
-
 
 )
 
