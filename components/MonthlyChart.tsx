@@ -50,7 +50,7 @@ barGap={8}
 <YAxis stroke="#9ca3af" />
 
 <Tooltip
-formatter={(value: number) => `₹${value.toLocaleString("en-IN")}`}
+formatter={(value: any) => `₹${Number(value).toLocaleString("en-IN")}`}
 contentStyle={{
   background: "#1f2937",
   border: "1px solid #374151",
