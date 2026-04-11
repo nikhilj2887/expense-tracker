@@ -287,7 +287,6 @@ Expense trend vs last month:
 
 </div>
 
-</DashboardLayout>
 
 )
 
