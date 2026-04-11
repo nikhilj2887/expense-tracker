@@ -1,76 +1,64 @@
 "use client"
 
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { motion } from "framer-motion"
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
 
 const COLORS = [
-"#4F46E5",
-"#22C55E",
-"#EF4444",
-"#F59E0B",
-"#06B6D4",
-"#A855F7"
+"#ef4444",
+"#22c55e",
+"#3b82f6",
+"#f59e0b",
+"#8b5cf6",
+"#06b6d4",
+"#ec4899"
 ]
 
-export default function CategoryPieChart({data}:any) {
+export default function CategoryPieChart({ data }) {
 
-  return (
+const total = data.reduce((sum:any,i:any)=>sum+i.value,0)
 
-    <motion.div
-      initial={{opacity:0, scale:0.95}}
-      animate={{opacity:1, scale:1}}
-      transition={{duration:0.4}}
-      className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 w-full"
-    >
+return(
 
-      <h2 className="text-xl font-semibold mb-4">
-        Category Breakdown
-      </h2>
+<div className="bg-gray-900/70 backdrop-blur-md p-6 rounded-xl border border-gray-800">
 
-      <ResponsiveContainer width="100%" height={280}>
+<h2 className="text-lg font-semibold mb-4">
+Category Breakdown
+</h2>
 
-        <PieChart>
+<ResponsiveContainer width="100%" height={320}>
 
-          <Pie
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={90}
-            label={false}
-            animationDuration={500}
-          >
+<PieChart>
 
-            {data.map((entry:any,index:number)=>(
-              <Cell
-                key={index}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
+<Pie
+data={data}
+dataKey="value"
+nameKey="name"
+innerRadius={70}
+outerRadius={100}
+paddingAngle={3}
+>
 
-          </Pie>
+{data.map((entry:any,index:number)=>(
+<Cell key={index} fill={COLORS[index % COLORS.length]}/>
+))}
 
-          <Tooltip
-            contentStyle={{
-              background:"#111827",
-              border:"1px solid #374151",
-              borderRadius:"8px",
-              color:"#fff"
-            }}
-          />
+</Pie>
 
-          <Legend
-            wrapperStyle={{
-              fontSize:"12px"
-            }}
-          />
+<Tooltip/>
 
-        </PieChart>
+</PieChart>
 
-      </ResponsiveContainer>
+</ResponsiveContainer>
 
-    </motion.div>
+<div className="text-center text-sm text-gray-400 mt-2">
+Total Spent
+</div>
 
-  )
+<div className="text-center text-xl font-bold">
+₹{total.toLocaleString()}
+</div>
+
+</div>
+
+)
+
 }

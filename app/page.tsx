@@ -1,8 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
+import { Menu } from "lucide-react"
+import DashboardLayout from "@/components/DashboardLayout"
 
 import AddTransaction from "@/components/AddTransaction"
 import CategoryPieChart from "@/components/CategoryPieChart"
@@ -22,6 +24,8 @@ export default function Home(){
 const router = useRouter()
 
 const [transactions,setTransactions] = useState<any[]>([])
+const [loading,setLoading] = useState(true)
+
 const [selectedMonth,setSelectedMonth] = useState(new Date().getMonth())
 const [selectedYear,setSelectedYear] = useState(new Date().getFullYear())
 
@@ -44,6 +48,8 @@ loadTransactions()
 
 async function loadTransactions(){
 
+setLoading(true)
+
 const { data } = await supabase
 .from("transactions")
 .select("*")
@@ -51,9 +57,15 @@ const { data } = await supabase
 
 setTransactions(data || [])
 
+setLoading(false)
+
 }
 
-const filteredTransactions = transactions.filter((t:any)=>{
+/* FILTERED TRANSACTIONS */
+
+const filteredTransactions = useMemo(()=>{
+
+return transactions.filter((t:any)=>{
 
 if(!t.date) return false
 
@@ -66,9 +78,13 @@ d.getFullYear() === selectedYear
 
 })
 
+},[transactions,selectedMonth,selectedYear])
+
 /* CATEGORY DATA */
 
-const categoryData = Object.values(
+const categoryData = useMemo(()=>{
+
+return Object.values(
 filteredTransactions
 .filter((t:any)=>t.type==="expense")
 .reduce((acc:any,t:any)=>{
@@ -84,9 +100,14 @@ return acc
 },{})
 )
 
+},[filteredTransactions])
+
 /* MONTHLY DATA */
 
-const monthlyData = transactions.reduce((acc:any,t:any)=>{
+const monthlyData = useMemo(()=>{
+
+return Object.values(
+transactions.reduce((acc:any,t:any)=>{
 
 if(!t.date) return acc
 
@@ -96,7 +117,7 @@ if(!acc[month]){
 acc[month] = {month,income:0,expense:0}
 }
 
-if(t.type === "income"){
+if(t.type==="income"){
 acc[month].income += Number(t.amount)
 }else{
 acc[month].expense += Number(t.amount)
@@ -104,7 +125,10 @@ acc[month].expense += Number(t.amount)
 
 return acc
 
-},{}) 
+},{})
+)
+
+},[transactions])
 
 /* TREND CALCULATION */
 
@@ -131,27 +155,59 @@ const prevExpense = prevMonthTransactions
 
 const trendArrow = currentExpense > prevExpense ? "↑" : "↓"
 
+/* LOADING SCREEN */
+
+if(loading){
+
 return(
 
-<div className="px-4 md:px-10 py-8 bg-gray-900 min-h-screen text-white">
+<div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+
+Loading dashboard...
+
+</div>
+
+)
+
+}
+
+return(
+
+<DashboardLayout>
+
+<div className="px-6 md:px-12 py-10 text-white">
+
+{/* HEADER */}
 
 {/* HEADER */}
 
 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-10">
 
-<div>
+{/* LEFT SIDE */}
 
-<h1 className="text-3xl font-bold">
+<div className="flex items-start justify-between w-full">
+
+<div>
+<h1 className="text-2xl md:text-3xl font-bold">
 Family Expense Tracker
 </h1>
 
 <p className="text-gray-400 text-sm mt-1">
-Viewing: {selectedMonth+1}/{selectedYear}
+Viewing: {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][selectedMonth]} {selectedYear}
 </p>
+</div>
+
+{/* MOBILE MENU BUTTON */}
+
+<button
+className="md:hidden p-2 rounded-lg hover:bg-gray-800 transition"
+>
+<Menu size={22} />
+</button>
 
 </div>
 
-{/* RIGHT SIDE CONTROLS */}
+{/* RIGHT CONTROLS */}
 
 <div className="flex items-center gap-3">
 
@@ -160,20 +216,9 @@ value={selectedMonth}
 onChange={(e)=>setSelectedMonth(Number(e.target.value))}
 className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 >
-
-<option value={0}>Jan</option>
-<option value={1}>Feb</option>
-<option value={2}>Mar</option>
-<option value={3}>Apr</option>
-<option value={4}>May</option>
-<option value={5}>Jun</option>
-<option value={6}>Jul</option>
-<option value={7}>Aug</option>
-<option value={8}>Sep</option>
-<option value={9}>Oct</option>
-<option value={10}>Nov</option>
-<option value={11}>Dec</option>
-
+{["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m,i)=>(
+<option key={i} value={i}>{m}</option>
+))}
 </select>
 
 <select
@@ -181,12 +226,10 @@ value={selectedYear}
 onChange={(e)=>setSelectedYear(Number(e.target.value))}
 className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 >
-
-<option value={2024}>2024</option>
-<option value={2025}>2025</option>
 <option value={2026}>2026</option>
 <option value={2027}>2027</option>
-
+<option value={2028}>2028</option>
+<option value={2029}>2029</option>
 </select>
 
 <LogoutButton/>
@@ -195,13 +238,16 @@ className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 
 </div>
 
-{/* TREND INDICATOR */}
+{/* TREND */}
 
-<div className="mb-6 text-sm text-gray-400">
+<div className="px-4 md:px-12 py-10 text-white">
 
 Expense trend vs last month:
+
 <span className={`ml-2 font-bold ${trendArrow==="↑"?"text-red-400":"text-green-400"}`}>
+
 {trendArrow}
+
 </span>
 
 </div>
@@ -212,15 +258,22 @@ Expense trend vs last month:
 
 {/* DASHBOARD GRID */}
 
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
 <AddTransaction reload={loadTransactions}/>
+
 <CategoryPieChart data={categoryData}/>
+
 <BudgetChart/>
-<MonthlyChart data={Object.values(monthlyData)}/>
+
+<MonthlyChart data={monthlyData} className="lg:col-span-2"/>
+
 <DailySpendingChart transactions={filteredTransactions}/>
+
 <SpendingLeaderboard transactions={filteredTransactions}/>
+
 <YearlyOverviewChart transactions={transactions}/>
+
 <TopCategories transactions={filteredTransactions}/>
 
 </div>
@@ -228,12 +281,16 @@ Expense trend vs last month:
 {/* TABLE */}
 
 <div className="mt-8">
+
 <TransactionTable transactions={filteredTransactions}/>
-</div>
-
-<FloatingAddButton/>
 
 </div>
+
+
+
+</div>
+
+</DashboardLayout>
 
 )
 

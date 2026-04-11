@@ -38,7 +38,7 @@ return(
 Daily Spending
 </h2>
 
-<ResponsiveContainer width="100%" height={260}>
+<ResponsiveContainer width="100%" height={320}>
 
 <LineChart data={dailyData}>
 

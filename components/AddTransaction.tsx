@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 
 export default function AddTransaction({ reload }: any) {
@@ -9,32 +9,70 @@ const [amount,setAmount] = useState("")
 const [category,setCategory] = useState("Food")
 const [type,setType] = useState("expense")
 const [date,setDate] = useState("")
-const [person,setPerson] = useState("Nikhil")
-
-/* NEW DESCRIPTION STATE */
-
+const [person,setPerson] = useState("")
 const [description,setDescription] = useState("")
+
+/* GET LOGGED IN USER */
+
+useEffect(()=>{
+
+async function loadUser(){
+
+const { data:{ user } } = await supabase.auth.getUser()
+
+if(user){
+
+/* If name stored in metadata */
+
+const name = user.user_metadata?.name
+
+if(name){
+setPerson(name)
+}
+
+/* fallback using email */
+
+else if(user.email === "nikhil@email.com"){
+setPerson("Nikhil")
+}
+else if(user.email === "sirisha@email.com"){
+setPerson("Sirisha")
+}
+
+}
+
+}
+
+loadUser()
+
+},[])
 
 /* CATEGORY LISTS */
 
 const expenseCategories = [
-"Food",
-"Travel",
-"Shopping",
-"Entertainment",
-"Health",
-"Home",
-"Transportation",
-"Utilities",
 "Bills",
 "CC Bill",
-"Rent",
-"Savings",
 "Debt",
+"EMI",
+"Entertainment",
+"Food",
+"Food Card Expenses",
+"Gifts",
+"Holiday",
+"Home",
+"Household Expenses",
+"Medical",
 "Niksha Nilayam",
-  "Personal",
-"Sai Ganesh"
-]
+"Other",
+"Personal",
+"Rapidnest",
+"Rent",
+"Sai Ganesh",
+"Savings",
+"Shopping",
+"Transportation",
+"Travel"
+].sort()
 
 const incomeCategories = [
 "Paycheck",
@@ -42,8 +80,11 @@ const incomeCategories = [
 "Interest",
 "Business Income",
 "Rent",
+"Savings",
 "Other Income"
-]
+].sort()
+
+const categories = type === "expense" ? expenseCategories : incomeCategories
 
 /* ADD TRANSACTION */
 
@@ -65,7 +106,6 @@ date: date || new Date().toISOString()
 ])
 
 if(error){
-console.log(error)
 alert(error.message)
 return
 }
@@ -75,9 +115,8 @@ return
 setAmount("")
 setType("expense")
 setCategory("Food")
-setDescription("")   // ← RESET DESCRIPTION
+setDescription("")
 setDate("")
-setPerson("Nikhil")
 
 reload()
 
@@ -134,18 +173,15 @@ onChange={(e)=>setCategory(e.target.value)}
 className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 >
 
-{type === "expense"
-? expenseCategories.map((cat)=>(
-<option key={cat} value={cat}>{cat}</option>
-))
-: incomeCategories.map((cat)=>(
-<option key={cat} value={cat}>{cat}</option>
-))
-}
+{categories.map((c)=>(
+<option key={c} value={c}>
+{c}
+</option>
+))}
 
 </select>
 
-{/* DESCRIPTION TEXTBOX */}
+{/* Description */}
 
 <input
 placeholder="Description (Eg: Swiggy dinner, Uber ride, Petrol)"
@@ -170,8 +206,10 @@ value={person}
 onChange={(e)=>setPerson(e.target.value)}
 className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 >
+
 <option value="Nikhil">Nikhil</option>
 <option value="Sirisha">Sirisha</option>
+
 </select>
 
 <button
@@ -185,4 +223,5 @@ Add Transaction
 </div>
 
 )
+
 }

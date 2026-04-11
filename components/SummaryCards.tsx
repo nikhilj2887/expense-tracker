@@ -27,22 +27,22 @@ totalIncome > 0
 
 return(
 
-<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
 
 {/* Income */}
 
-<div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow hover:border-green-500/40 transition">
+<div className="bg-gray-900/70 backdrop-blur-md border border-gray-800 rounded-xl p-5">
 
 <div className="flex items-center justify-between mb-3">
 <p className="text-gray-400 text-sm">Total Income</p>
 <ArrowUpRight className="text-green-500" size={20}/>
 </div>
 
-<h2 className="text-3xl font-bold text-green-500">
+<h2 className="text-xl md:text-2xl xl:text-3xl font-bold text-green-500">
 ₹{formatCurrency(totalIncome)}
 </h2>
 
-<p className="text-xs text-gray-500 mt-1">
+<p className="text-xs text-gray-400 mt-1">
 Money received this month
 </p>
 
@@ -58,7 +58,7 @@ Money received this month
 <ArrowDownRight className="text-red-500" size={20}/>
 </div>
 
-<h2 className="text-3xl font-bold text-red-500">
+<h2 className="text-lg md:text-xl xl:text-2xl font-bold whitespace-nowrap text-red-500">
 ₹{formatCurrency(totalExpense)}
 </h2>
 
@@ -78,7 +78,7 @@ Money spent this month
 <Wallet className="text-blue-500" size={20}/>
 </div>
 
-<h2 className="text-3xl font-bold text-blue-400">
+<h2 className="text-lg md:text-xl xl:text-2xl font-bold whitespace-nowrap text-blue-400">
 ₹{formatCurrency(balance)}
 </h2>
 
@@ -98,7 +98,7 @@ Income minus expenses
 <PiggyBank className="text-purple-400" size={20}/>
 </div>
 
-<h2 className="text-3xl font-bold text-purple-400">
+<h2 className="text-lg md:text-xl xl:text-2xl font-bold whitespace-nowrap text-purple-400">
 {savingsRate}%
 </h2>
 
