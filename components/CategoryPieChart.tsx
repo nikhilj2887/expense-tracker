@@ -1,6 +1,6 @@
 "use client"
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts"
 
 export default function CategoryPieChart({ data }: { data: any[] }) {
 
@@ -31,8 +31,7 @@ Category Breakdown
 data={data}
 dataKey="value"
 nameKey="name"
-outerRadius={90}
-label={(entry)=>`${entry.name}`}
+label={false}
 >
 
 {data.map((entry:any,index:number)=>(
@@ -42,8 +41,10 @@ label={(entry)=>`${entry.name}`}
 </Pie>
 
 <Tooltip
-formatter={(value: any) => `₹${Number(value).toLocaleString("en-IN")}`}
+formatter={(value:any)=>`₹${Number(value).toLocaleString("en-IN")}`}
 />
+
+<Legend />
 
 </PieChart>
 

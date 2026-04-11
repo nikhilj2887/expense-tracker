@@ -175,7 +175,8 @@ return(
 
 <DashboardLayout>
 
-<div className="px-6 md:px-12 py-10 text-white">
+<div className="min-h-screen bg-gray-950">
+    </div>
 
 {/* HEADER */}
 
@@ -199,11 +200,7 @@ Viewing: {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","De
 
 {/* MOBILE MENU BUTTON */}
 
-<button
-className="md:hidden p-2 rounded-lg hover:bg-gray-800 transition"
->
-<Menu size={22} />
-</button>
+
 
 </div>
 
@@ -240,7 +237,7 @@ className="bg-gray-800 border border-gray-700 px-3 py-2 rounded-lg text-sm"
 
 {/* TREND */}
 
-<div className="px-4 md:px-12 py-10 text-white">
+<div className="mb-6 text-gray-300">
 
 Expense trend vs last month:
 
@@ -258,7 +255,7 @@ Expense trend vs last month:
 
 {/* DASHBOARD GRID */}
 
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
 
 <AddTransaction reload={loadTransactions}/>
 
