@@ -4,7 +4,6 @@ import { useEffect, useState, useMemo } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { Menu } from "lucide-react"
-import DashboardLayout from "@/components/DashboardLayout"
 
 import AddTransaction from "@/components/AddTransaction"
 import CategoryPieChart from "@/components/CategoryPieChart"
@@ -173,7 +172,7 @@ Loading dashboard...
 
 return(
 
-<DashboardLayout>
+
 
 <div className="min-h-screen bg-gray-950">
     </div>
