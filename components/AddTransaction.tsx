@@ -9,43 +9,35 @@ const [amount,setAmount] = useState("")
 const [category,setCategory] = useState("Food")
 const [type,setType] = useState("expense")
 const [date,setDate] = useState("")
-const [person,setPerson] = useState("")
+const [person,setPerson] = useState("Nikhil")
 const [description,setDescription] = useState("")
 
 /* GET LOGGED IN USER */
 
-useEffect(()=>{
+useEffect(() => {
+  async function loadUser() {
+    const { data: { user } } = await supabase.auth.getUser()
 
-async function loadUser(){
+    if (user && !person) {
+      const name = user.user_metadata?.name
 
-const { data:{ user } } = await supabase.auth.getUser()
+      if (name) {
+        setPerson(name)
+      } 
+      else if (user.email === "nikhil@email.com") {
+        setPerson("Nikhil")
+      } 
+      else if (user.email === "sirisha@email.com") {
+        setPerson("Sirisha")
+      } 
+      else {
+        setPerson("Nikhil")
+      }
+    }
+  }
 
-if(user){
-
-/* If name stored in metadata */
-
-const name = user.user_metadata?.name
-
-if(name){
-setPerson(name)
-}
-
-/* fallback using email */
-
-else if(user.email === "nikhil@email.com"){
-setPerson("Nikhil")
-}
-else if(user.email === "sirisha@email.com"){
-setPerson("Sirisha")
-}
-
-}
-
-}
-
-loadUser()
-
-},[])
+  loadUser()
+}, [person])
 
 /* CATEGORY LISTS */
 
