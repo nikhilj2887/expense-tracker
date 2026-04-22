@@ -99,7 +99,7 @@ const { error } = await supabase
 amount: Number(amount),
 category,
 type,
-person,
+ person: person || "Nikhil",
 notes: description,
 date: date || new Date().toISOString()
 }
