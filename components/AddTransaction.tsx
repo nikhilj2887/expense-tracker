@@ -83,7 +83,8 @@ const categories = type === "expense" ? expenseCategories : incomeCategories
 async function addTransaction(e:any){
 
 e.preventDefault()
-
+ console.log("Final Amount:", amount)
+  console.log("Converted Amount:", Number(amount))
 const { error } = await supabase
 .from("transactions")
 .insert([
@@ -128,10 +129,12 @@ Add Transaction
 
 <input
 type="number"
-placeholder="Amount"
-value={amount}
-onChange={(e)=>setAmount(e.target.value)}
-className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
+  placeholder="Amount"
+  value={amount}
+  onChange={(e) => setAmount(e.target.value)}
+  onWheel={(e) => e.currentTarget.blur()}
+  inputMode="decimal"
+  className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 />
 
 {/* Type */}
