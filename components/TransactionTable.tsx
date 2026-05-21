@@ -3,273 +3,330 @@
 import { useState } from "react"
 import { supabase } from "@/lib/supabase"
 
-export default function TransactionTable({ transactions }: any) {
+export default function TransactionTable({ transactions, reload }: any) {
 
-const [editing,setEditing] = useState<any>(null)
+  const [editing, setEditing] = useState<any>(null)
 
-/* DELETE TRANSACTION */
+  /* CATEGORY LIST */
 
-async function deleteTransaction(id:any){
+  const categories = [
+    "Bills",
+    "CC Bill",
+    "Debt",
+    "EMI",
+    "Entertainment",
+    "Food",
+    "Food Card Expenses",
+    "Gifts",
+    "Holiday",
+    "Home",
+    "Household Expenses",
+    "Medical",
+    "Niksha Nilayam",
+    "Other",
+    "Personal",
+    "Rapidnest",
+    "Rent",
+    "Sai Ganesh",
+    "Savings",
+    "Shopping",
+    "Transportation",
+    "Travel"
+  ]
 
-const confirmDelete = confirm("Delete this transaction?")
+  /* DELETE TRANSACTION */
 
-if(!confirmDelete) return
+  async function deleteTransaction(id: any) {
 
-const { error } = await supabase
-.from("transactions")
-.delete()
-.eq("id", id)
+    const confirmDelete = confirm("Delete this transaction?")
 
-if(error){
-alert(error.message)
-return
-}
+    if (!confirmDelete) return
 
-window.location.reload()
+    const { error } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", id)
 
-}
+    if (error) {
+      alert(error.message)
+      return
+    }
 
-/* SAVE EDIT */
+    reload()
+  }
 
-async function saveEdit(){
+  /* SAVE EDIT */
 
-const { error } = await supabase
-.from("transactions")
-.update({
-amount: editing.amount,
-category: editing.category,
-notes: editing.notes
-})
-.eq("id", editing.id)
+  async function saveEdit() {
 
-if(error){
-alert(error.message)
-return
-}
+    console.log("Updating:", editing)
 
-setEditing(null)
-window.location.reload()
+    const { data, error } = await supabase
+      .from("transactions")
+      .update({
+        amount: Number(editing.amount),
+        category: editing.category,
+        notes: editing.notes
+      })
+      .eq("id", editing.id)
+      .select()
 
-}
+    console.log("Response:", data)
+    console.log("Error:", error)
 
-return(
+    if (error) {
+      alert(error.message)
+      return
+    }
 
-<div className="bg-gray-900/70 backdrop-blur-md p-6 rounded-xl border border-gray-800">
+    alert("Transaction updated successfully")
 
-<h2 className="text-xl font-semibold mb-5">
-Transactions
-</h2>
+    setEditing(null)
 
-{/* DESKTOP TABLE */}
+    reload()
+  }
 
-<div className="hidden md:block overflow-x-auto">
+  return (
 
-<table className="w-full text-left">
+    <div className="bg-gray-900/70 backdrop-blur-md p-6 rounded-xl border border-gray-800">
 
-<thead>
+      <h2 className="text-xl font-semibold mb-5">
+        Transactions
+      </h2>
 
-<tr className="text-gray-400 border-b border-gray-700">
+      {/* DESKTOP TABLE */}
 
-<th className="py-3">Date</th>
-<th className="py-3">Category</th>
-<th className="py-3">Description</th>
-<th className="py-3">Amount</th>
-<th className="py-3">Person</th>
-<th className="py-3">Actions</th>
+      <div className="hidden md:block overflow-x-auto">
 
-</tr>
+        <table className="w-full text-left">
 
-</thead>
+          <thead>
 
-<tbody>
+            <tr className="text-gray-400 border-b border-gray-700">
 
-{transactions.map((t:any, index:number)=>{
+              <th className="py-3">Date</th>
+              <th className="py-3">Category</th>
+              <th className="py-3">Description</th>
+              <th className="py-3">Amount</th>
+              <th className="py-3">Person</th>
+              <th className="py-3">Actions</th>
 
-return(
+            </tr>
 
-<tr
-key={t.id}
-className={`border-b border-gray-800 
-${index % 2 === 0 ? "bg-gray-900" : "bg-gray-950"} hover:bg-gray-800`}
->
+          </thead>
 
-<td className="py-3">
-{new Date(t.date).toLocaleDateString()}
-</td>
+          <tbody>
 
-<td className="font-medium">
-{t.category}
-</td>
+            {transactions.map((t: any, index: number) => {
 
-<td className="text-gray-300">
-{t.notes || "-"}
-</td>
+              return (
 
-<td className={`font-semibold ${t.type==="income" ? "text-green-400" : "text-red-400"}`}>
-₹{Number(t.amount).toLocaleString("en-IN")}
-</td>
+                <tr
+                  key={t.id}
+                  className={`border-b border-gray-800 
+                  ${index % 2 === 0 ? "bg-gray-900" : "bg-gray-950"} hover:bg-gray-800`}
+                >
 
-<td className="text-gray-300">
-{t.person}
-</td>
+                  <td className="py-3">
+                    {new Date(t.date).toLocaleDateString()}
+                  </td>
 
-<td className="flex items-center gap-3 py-3">
+                  <td className="font-medium">
+                    {t.category}
+                  </td>
 
-<button
-onClick={()=>setEditing(t)}
-className="text-blue-400 hover:text-blue-500 transition"
->
-✏️
-</button>
+                  <td className="text-gray-300">
+                    {t.notes || "-"}
+                  </td>
 
-<button
-onClick={()=>deleteTransaction(t.id)}
-className="text-red-400 hover:text-red-500 transition"
->
-🗑
-</button>
+                  <td className={`font-semibold ${t.type === "income" ? "text-green-400" : "text-red-400"}`}>
+                    ₹{Number(t.amount).toLocaleString("en-IN")}
+                  </td>
 
-</td>
+                  <td className="text-gray-300">
+                    {t.person}
+                  </td>
 
-</tr>
+                  <td className="flex items-center gap-3 py-3">
 
-)
+                    <button
+                      onClick={() => {
+                        window.scrollTo({
+                          top: 0,
+                          behavior: "smooth"
+                        })
+                        setEditing(t)
+                      }}
+                      className="text-blue-400 hover:text-blue-500 transition"
+                    >
+                      ✏️
+                    </button>
 
-})}
+                    <button
+                      onClick={() => deleteTransaction(t.id)}
+                      className="text-red-400 hover:text-red-500 transition"
+                    >
+                      🗑
+                    </button>
 
-</tbody>
+                  </td>
 
-</table>
+                </tr>
 
-</div>
+              )
 
-{/* MOBILE CARD VIEW */}
+            })}
 
-<div className="space-y-4 md:hidden">
+          </tbody>
 
-{transactions.map((t:any, index:number)=>{
+        </table>
 
-return(
+      </div>
 
-<div
-key={t.id}
-className={`p-4 rounded-xl border border-gray-800 backdrop-blur-md 
-${index % 2 === 0 ? "bg-gray-900/70" : "bg-gray-950/70"}`}
->
+      {/* MOBILE CARD VIEW */}
 
-<div className="flex justify-between text-sm text-gray-400">
+      <div className="space-y-4 md:hidden">
 
-<span>
-{new Date(t.date).toLocaleDateString()}
-</span>
+        {transactions.map((t: any, index: number) => {
 
-<span>
-{t.person}
-</span>
+          return (
 
-</div>
+            <div
+              key={t.id}
+              className={`p-4 rounded-xl border border-gray-800 backdrop-blur-md 
+              ${index % 2 === 0 ? "bg-gray-900/70" : "bg-gray-950/70"}`}
+            >
 
-<div className="mt-2 font-semibold text-lg">
-{t.category}
-</div>
+              <div className="flex justify-between text-sm text-gray-400">
 
-{t.notes && (
-<div className="text-gray-400 text-sm mt-1">
-{t.notes}
-</div>
-)}
+                <span>
+                  {new Date(t.date).toLocaleDateString()}
+                </span>
 
-<div
-className={`mt-2 font-bold ${
-t.type==="income" ? "text-green-400" : "text-red-400"
-}`}
->
-₹{Number(t.amount).toLocaleString("en-IN")}
-</div>
+                <span>
+                  {t.person}
+                </span>
 
-<div className="flex gap-4 mt-3">
+              </div>
 
-<button
-onClick={()=>setEditing(t)}
-className="text-blue-400 text-sm"
->
-Edit
-</button>
+              <div className="mt-2 font-semibold text-lg">
+                {t.category}
+              </div>
 
-<button
-onClick={()=>deleteTransaction(t.id)}
-className="text-red-400 text-sm"
->
-Delete
-</button>
+              {t.notes && (
+                <div className="text-gray-400 text-sm mt-1">
+                  {t.notes}
+                </div>
+              )}
 
-</div>
+              <div
+                className={`mt-2 font-bold ${
+                  t.type === "income" ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                ₹{Number(t.amount).toLocaleString("en-IN")}
+              </div>
 
-</div>
+              <div className="flex gap-4 mt-3">
 
-)
+                <button
+                  onClick={() => {
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth"
+                    })
+                    setEditing(t)
+                  }}
+                  className="text-blue-400 text-sm"
+                >
+                  Edit
+                </button>
 
-})}
+                <button
+                  onClick={() => deleteTransaction(t.id)}
+                  className="text-red-400 text-sm"
+                >
+                  Delete
+                </button>
 
-</div>
+              </div>
 
-{/* EDIT MODAL */}
+            </div>
 
-{editing && (
+          )
 
-<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        })}
 
-<div className="bg-gray-900 p-6 rounded-xl w-96 border border-gray-800">
+      </div>
 
-<h2 className="text-lg font-semibold mb-4">
-Edit Transaction
-</h2>
+      {/* EDIT MODAL */}
 
-<input
-value={editing.amount}
-onChange={(e)=>setEditing({...editing,amount:e.target.value})}
-className="border border-gray-700 bg-gray-800 p-2 w-full mb-3 rounded"
-/>
+      {editing && (
 
-<input
-value={editing.category}
-onChange={(e)=>setEditing({...editing,category:e.target.value})}
-className="border border-gray-700 bg-gray-800 p-2 w-full mb-3 rounded"
-/>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 overflow-y-auto">
 
-<input
-value={editing.notes || ""}
-onChange={(e)=>setEditing({...editing,notes:e.target.value})}
-placeholder="Description"
-className="border border-gray-700 bg-gray-800 p-2 w-full mb-4 rounded"
-/>
+          <div className="bg-gray-900 p-6 rounded-xl w-full max-w-md border border-gray-800 my-auto">
 
-<div className="flex justify-end gap-3">
+            <h2 className="text-lg font-semibold mb-4">
+              Edit Transaction
+            </h2>
 
-<button
-onClick={()=>setEditing(null)}
-className="text-gray-400 hover:text-gray-200"
->
-Cancel
-</button>
+            <input
+              type="number"
+              value={editing.amount}
+              onChange={(e) => setEditing({ ...editing, amount: e.target.value })}
+              className="border border-gray-700 bg-gray-800 p-2 w-full mb-3 rounded"
+              min="0"
+              step="0.01"
+            />
 
-<button
-onClick={saveEdit}
-className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
->
-Save
-</button>
+            <select
+              value={editing.category}
+              onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+              className="border border-gray-700 bg-gray-800 p-2 w-full mb-3 rounded"
+            >
 
-</div>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
 
-</div>
+            </select>
 
-</div>
+            <input
+              value={editing.notes || ""}
+              onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
+              placeholder="Description"
+              className="border border-gray-700 bg-gray-800 p-2 w-full mb-4 rounded"
+            />
 
-)}
+            <div className="flex justify-end gap-3">
 
-</div>
+              <button
+                onClick={() => setEditing(null)}
+                className="text-gray-400 hover:text-gray-200"
+              >
+                Cancel
+              </button>
 
-)
+              <button
+                onClick={saveEdit}
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+              >
+                Save
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+    </div>
+
+  )
 
 }
