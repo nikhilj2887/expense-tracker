@@ -38,7 +38,7 @@ const { error } = await supabase
 .update({
 amount: editing.amount,
 category: editing.category,
-notes: editing.description
+notes: editing.notes
 })
 .eq("id", editing.id)
 
@@ -238,8 +238,8 @@ className="border border-gray-700 bg-gray-800 p-2 w-full mb-3 rounded"
 />
 
 <input
-value={editing.description || ""}
-onChange={(e)=>setEditing({...editing,description:e.target.value})}
+value={editing.notes || ""}
+onChange={(e)=>setEditing({...editing,notes:e.target.value})}
 placeholder="Description"
 className="border border-gray-700 bg-gray-800 p-2 w-full mb-4 rounded"
 />
