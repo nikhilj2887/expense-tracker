@@ -11,7 +11,7 @@ export default function TransactionTable({ transactions, reload }: any) {
 
   const [currentPage, setCurrentPage] = useState(1)
 
-  const transactionsPerPage = 10
+  const transactionsPerPage = 100
 
   const indexOfLastTransaction =
     currentPage * transactionsPerPage
