@@ -9,35 +9,45 @@ const [amount,setAmount] = useState("")
 const [category,setCategory] = useState("Food")
 const [type,setType] = useState("expense")
 const [date,setDate] = useState("")
-const [person,setPerson] = useState("Nikhil")
+const [person,setPerson] = useState("")
 const [description,setDescription] = useState("")
 
 /* GET LOGGED IN USER */
 
 useEffect(() => {
-  async function loadUser() {
-    const { data: { user } } = await supabase.auth.getUser()
 
-    if (user && !person) {
-      const name = user.user_metadata?.name
+async function loadUser() {
 
-      if (name) {
-        setPerson(name)
-      } 
-      else if (user.email === "nikhil@email.com") {
-        setPerson("Nikhil")
-      } 
-      else if (user.email === "sirisha@email.com") {
-        setPerson("Sirisha")
-      } 
-      else {
-        setPerson("Nikhil")
-      }
-    }
-  }
+const { data: { user } } = await supabase.auth.getUser()
 
-  loadUser()
-}, [person])
+if (!user) return
+
+/* Try metadata first */
+
+if (user.user_metadata?.name) {
+setPerson(user.user_metadata.name)
+return
+}
+
+/* Fallback using email */
+
+const email = user.email?.toLowerCase()
+
+if (email?.includes("nikhil")) {
+setPerson("Nikhil")
+}
+else if (email?.includes("sirisha")) {
+setPerson("Sirisha")
+}
+else {
+setPerson("User")
+}
+
+}
+
+loadUser()
+
+}, [])
 
 /* CATEGORY LISTS */
 
@@ -92,7 +102,7 @@ const { error } = await supabase
 amount: Number(amount),
 category,
 type,
- person: person || "Nikhil",
+ person: person || "Unknown",
 notes: description,
 date: date || new Date().toISOString()
 }
@@ -196,16 +206,11 @@ className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
 
 {/* Person */}
 
-<select
+<input
 value={person}
-onChange={(e)=>setPerson(e.target.value)}
-className="border border-gray-600 bg-gray-900 p-3 w-full rounded-lg"
->
-
-<option value="Nikhil">Nikhil</option>
-<option value="Sirisha">Sirisha</option>
-
-</select>
+readOnly
+className="border border-gray-600 bg-gray-800 p-3 w-full rounded-lg text-gray-400"
+/>
 
 <button
 className="bg-blue-600 hover:bg-blue-700 text-white w-full p-3 rounded-lg transition"
