@@ -73,6 +73,7 @@ const expenseCategories = [
 "Savings",
 "Shopping",
 "Transportation",
+"Vasavi Flat",
 "Travel"
 ].sort()
 
